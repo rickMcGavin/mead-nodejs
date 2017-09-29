@@ -15,8 +15,8 @@ var fetchNotes = () => {
 	}
 };
 
-var saveNotes = () => {
-
+var saveNotes = (notes) => {
+	fs.writeFileSync('notes-data.json', JSON.stringify(notes));
 };
 
 // Function for adding a note
@@ -38,8 +38,9 @@ var addNote = (title, body) => {
 	if (duplicateNotes.length === 0) {
 		// if array is empty push it to the main notes array and write it to the json
 		notes.push(note);
-		fs.writeFileSync('notes-data.json', JSON.stringify(notes));
-	};
+		saveNotes(notes);
+		return note;
+	} 
 
 };
 
@@ -52,8 +53,16 @@ var readNote = (title) => {
 }
 
 var removeNote = (title) => {
-	console.log('Removing note', title);
+	// fetch notes
+	var notes = fetchNotes();
+	// filter notes, removing the one with title of argument
+	var removedNoteArray = notes.filter((note) => note.title !== title);
+	// save new notes array
+	saveNotes(removedNoteArray);
+
+	return (notes.length !== removedNoteArray.length);
 }
+
 module.exports = {
 	addNote,
 	getAll,
